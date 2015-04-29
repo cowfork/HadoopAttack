@@ -1,6 +1,5 @@
 package com.hadoop.common;
 
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -78,5 +77,22 @@ public class Tools {
 				break;
 		}
 		return app;
+	}
+	
+	public static ArrayList<String> getSlaverList(String source){
+		int index = source.indexOf("<a href=\"/"+"/");
+		ArrayList<String> result = new ArrayList<String>();
+		while(index != -1){
+			index += 11;
+			String url = new String();
+			while(source.charAt(index) != '"'){
+				url += source.charAt(index);
+				index++;
+			}
+			result.add(url);
+			index = source.indexOf("<a href=\"/"+"/",index);
+		}
+		return result;
+		
 	}
 }
