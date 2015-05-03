@@ -4,8 +4,10 @@ public class Container {
 	private String id;
 	private String start;
 	private String end;
+	private Application app;
 
-	public Container(String id,String start, String end) {
+	public Container(Application app,String id,String start, String end) {
+		this.app = app;
 		this.id = id;
 		this.start = start;
 		this.end = end;
@@ -33,6 +35,12 @@ public class Container {
 
 	public void setEnd(String end) {
 		this.end = end;
+	}
+
+	@Override
+	public String toString() {
+		return "Container [id=" + id + ", name=" + app.getName() + ", start=" + start + ", end=" + end
+				+ "]";
 	}
 
 }

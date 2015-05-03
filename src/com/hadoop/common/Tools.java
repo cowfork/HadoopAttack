@@ -40,7 +40,8 @@ public class Tools {
 		return pageHTML.toString();
 	}
 
-	public static ArrayList<Application> getMasterData(String source) {
+	public static ArrayList<Application> getAppList(String masterUrl,String encoding) {
+		String source = Tools.getHtml(masterUrl, encoding);
 		int index = source.lastIndexOf("var appsTableData");
 		ArrayList<Application> app = new ArrayList<Application>();
 		if (-1 == index) {
@@ -62,7 +63,7 @@ public class Tools {
 					int q = values[0].indexOf("</a>");
 					if (k != -1 && q != -1) {
 						//System.out.println(values[0].substring(k, q));
-						app.add(new Application(values[0].substring(k, q)
+						app.add(new Application(values[0].substring(k + 12, q)//get the real id
 								.trim(), values[1].trim(), values[2].trim(),
 								values[3].trim()));
 					}
@@ -79,7 +80,8 @@ public class Tools {
 		return app;
 	}
 	
-	public static ArrayList<String> getSlaverList(String source){
+	public static ArrayList<String> getSlaverList(String masterUrl,String encoding){
+		String source = Tools.getHtml(masterUrl, encoding);
 		int index = source.indexOf("<a href=\"/"+"/");
 		ArrayList<String> result = new ArrayList<String>();
 		while(index != -1){
