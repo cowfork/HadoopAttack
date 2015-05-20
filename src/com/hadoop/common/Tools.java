@@ -65,7 +65,7 @@ public class Tools {
 						//System.out.println(values[0].substring(k, q));
 						app.add(new Application(values[0].substring(k + 12, q)//get the real id
 								.trim(), values[1].trim(), values[2].trim(),
-								values[3].trim()));
+								values[3].trim(),values[7].trim()));
 					}
 				}
 				table.delete(0, table.length());

@@ -74,9 +74,11 @@ class SlaverThread extends Thread {
 				// TODO Auto-generated catch block
 				//System.out.println(url + e.getMessage());
 				e.printStackTrace();
+				return;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return;
 			}
 
 		}
@@ -99,7 +101,15 @@ public class ContainerProcessor {
 
 	public void run() {
 		for (String url : slavers) {
-			new SlaverThread(url + HadoopAttack.allContainerFix, app).start();
+			SlaverThread slaverThread = new SlaverThread(url + HadoopAttack.allContainerFix, app);
+			slaverThread.start();
+			try {
+				slaverThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		System.out.println(app.getName() + " Done!");
 	}
 }

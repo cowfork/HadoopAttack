@@ -4,6 +4,7 @@ public class Application {
 	private String id;
 	private String user;
 	private String name;
+	private String status;
 	private String type;
 
 	public String getId() {
@@ -38,10 +39,19 @@ public class Application {
 		this.type = type;
 	}
 
-	public Application(String id, String user, String name, String type) {
+	public Application(String id, String user, String name, String type,String status) {
 		this.id = id;
 		this.user = user;
 		this.name = name;
 		this.type = type;
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

