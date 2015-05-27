@@ -57,6 +57,10 @@ public class Tools {
 				stack.push("[");
 			} else if (ch == ']') {
 				stack.pop();
+				if(!stack.isEmpty()){
+					while(index < source.length() && source.charAt(index)!='[' )index++;
+					index--;
+				}
 				String[] values = table.toString().split(",");
 				if (values.length == 11) {
 					int k = values[0].lastIndexOf("application_");

