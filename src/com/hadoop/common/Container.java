@@ -4,13 +4,16 @@ public class Container {
 	private String id;
 	private String start;
 	private String end;
+	private String node;
 	private Application app;
 
-	public Container(Application app,String id,String start, String end) {
-		this.app = app;
+	public Container(Application app, String id, String start, String end,
+			String node) {
 		this.id = id;
 		this.start = start;
 		this.end = end;
+		this.node = node;
+		this.app = app;
 	}
 
 	public String getId() {
@@ -39,8 +42,8 @@ public class Container {
 
 	@Override
 	public String toString() {
-		return "Container [id=" + id + ", name=" + app.getName() + ", start=" + start + ", end=" + end
-				+ "]";
+		return "Container [id=" + id + ", name=" + app.getName() + ", start="
+				+ start + ", end=" + end + "] node:" + node;
 	}
 
 }

